@@ -1,0 +1,14 @@
+{
+  "name": "arjwan-control-center",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "لوحة تحكم الأرجوان — مراقبة وتفعيل وإدارة تطبيقات الأرجوان",
+  "scripts": {
+    "dev": "wrangler pages dev . --port 8788",
+    "check": "node tools/status-check.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

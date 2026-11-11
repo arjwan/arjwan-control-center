@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة تحكم الأرجوان</title>
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">A</span>
+    <div>
+      <strong>لوحة تحكم الأرجوان</strong>
+      <small>ARJWAN CONTROL CENTER</small>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span id="lastChecked" class="muted">لم يُفحص بعد</span>
+    <button id="refresh" class="btn primary" type="button">فحص الآن</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-view="overview">نظرة عامة</button>
+  <button class="tab" data-view="apps">التطبيقات</button>
+  <button class="tab" data-view="services">السيرفرات</button>
+  <button class="tab" data-view="databases">قواعد البيانات</button>
+  <button class="tab" data-view="licenses">التراخيص</button>
+  <button class="tab" data-view="monitor">المراقبة</button>
+  <button class="tab" data-view="updates">التحديثات</button>
+</nav>
+
+<main>
+  <section class="view active" id="view-overview">
+    <div class="cards" id="summaryCards"></div>
+    <h2>حالة التطبيقات</h2>
+    <div class="list" id="overviewApps"></div>
+  </section>
+
+  <section class="view" id="view-apps">
+    <h2>جميع التطبيقات</h2>
+    <div class="list" id="appsList"></div>
+  </section>
+
+  <section class="view" id="view-services">
+    <h2>السيرفرات والخدمات</h2>
+    <div class="list" id="servicesList"></div>
+  </section>
+
+  <section class="view" id="view-databases">
+    <h2>قواعد البيانات</h2>
+    <div class="notice">
+      تحتاج هذه الشاشة إلى مفتاح Cloudflare API (قراءة فقط) لعرض D1 وR2 وقواعد المشاريع.
+      حتى إضافته لا تُعرض أي بيانات مخترعة.
+    </div>
+    <div class="list" id="databasesList"></div>
+  </section>
+
+  <section class="view" id="view-licenses">
+    <h2>التراخيص والتفعيل</h2>
+    <div class="notice">
+      التفعيل يتطلب خادم تراخيص موثوقاً ومفتاح توقيع. لا تُنفَّذ أي عملية تفعيل من هذه الواجهة قبل ربط الخادم.
+    </div>
+    <div class="list" id="licensesList"></div>
+  </section>
+
+  <section class="view" id="view-monitor">
+    <h2>المراقبة</h2>
+    <div class="notice">فحص حي كل ٦٠ ثانية. الحالة تعتمد على استجابة الخدمة من خارج الشبكة.</div>
+    <div class="list" id="monitorList"></div>
+  </section>
+
+  <section class="view" id="view-updates">
+    <h2>التحديثات — GitHub</h2>
+    <div class="list" id="updatesList"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>قراءة فقط — لا تُنفَّذ أوامر على الخدمات من هذه النسخة.</span>
+</footer>
+
+<script src="/assets/app.js" type="module"></script>
+</body>
+</html>
