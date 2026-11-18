@@ -25,6 +25,33 @@ async function offlineReport() {
     repos: REPOS.map(repo=>({repo,ok:false,offline:true}))
   };
 }
+
+async function localOnlineReport() {
+  const { APPS, SERVICES, REPOS } = await import(pathToFileURL(path.join(ROOT,'shared','apps.js')).href);
+  const probe=async (url) => {
+    if(!url) return {ok:false,httpStatus:0,latencyMs:0};
+    const start=Date.now();
+    try {
+      const result=await fetch(url,{signal:AbortSignal.timeout(7000),redirect:'follow'});
+      return {ok:true,httpStatus:result.status,latencyMs:Date.now()-start};
+    } catch { return {ok:false,httpStatus:0,latencyMs:Date.now()-start};}
+  };
+  const apps=await Promise.all(APPS.map(async a=>{
+    const p=await probe(a.url);
+    const status=!a.url?'unpublished':p.ok&&p.httpStatus<400?'up':p.ok&&[401,403].includes(p.httpStatus)?'up':'down';
+    return {...a,...p,status};
+  }));
+  const services=await Promise.all(SERVICES.map(async svc=>{
+    const p=await probe(svc.url);
+    return {...svc,...p,status:p.ok&&svc.expect.includes(p.httpStatus)?'up':'down'};
+  }));
+  return {
+    checkedAt:new Date().toISOString(), offline:false,cached:false,
+    summary:{total:apps.length,up:apps.filter(a=>a.status==='up').length,down:apps.filter(a=>a.status==='down').length,unpublished:apps.filter(a=>a.status==='unpublished').length},
+    apps,services,repos:REPOS.map(repo=>({repo,ok:false,offline:true}))
+  };
+}
+
 async function currentReport() {
   const cachePath = path.join(app.getPath('userData'),'last-status.json');
   if (REMOTE_STATUS) {
@@ -39,6 +66,13 @@ async function currentReport() {
       return {...report,offline:false,cached:false};
     } catch(error) { console.warn('Remote status unavailable:',error.message); }
   }
+  try {
+    const report=await localOnlineReport();
+    if(report.apps.some(a=>a.httpStatus>0)||report.services.some(s=>s.httpStatus>0)){
+      await fs.writeFile(cachePath,JSON.stringify(report),'utf8');
+      return report;
+    }
+  } catch(error) { console.warn('Local probes unavailable:',error.message); }
   try {
     const report=JSON.parse(await fs.readFile(cachePath,'utf8'));
     if (Array.isArray(report.apps) && report.summary) return {...report,offline:true,cached:true};
