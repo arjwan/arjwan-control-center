@@ -47,9 +47,9 @@ function appRow(app) {
 
   row.append(el('span', `pill ${app.status}`, STATUS_LABEL[app.status] || app.status));
 
-  if (app.url) {
-    const link = el('a', 'btn', 'فتح');
-    link.href = app.url;
+  if (app.url || app.repo) {
+    const link = el('a', 'btn', app.url ? 'فتح' : 'المستودع');
+    link.href = app.url || `https://github.com/${app.repo}`;
     link.target = '_blank';
     link.rel = 'noopener';
     row.append(link);
@@ -83,7 +83,7 @@ function repoRow(repo) {
   title.querySelector('a').target = '_blank';
   title.querySelector('a').rel = 'noopener';
   main.append(title);
-  main.append(el('div', 'sub', repo.ok ? (repo.message || 'لا توجد commits') : 'تعذر قراءة المستودع'));
+  main.append(el('div', 'sub', repo.offline ? 'لا يمكن فحص GitHub دون اتصال' : repo.ok ? (repo.message || 'لا توجد commits') : 'تعذر قراءة المستودع'));
   row.append(main);
   const meta = el('div', 'meta');
   if (repo.sha) meta.append(el('span', '', repo.sha));
@@ -106,6 +106,12 @@ function placeholderRow(name, detail) {
 function render() {
   const report = state.report;
   if (!report) return;
+  if (report.offline) {
+    report.apps = report.apps.map(a => ({ ...a, status: 'unknown' }));
+    report.services = report.services.map(s => ({ ...s, status: 'unknown' }));
+    report.repos = report.repos.map(r => ({ ...r, ok: false, offline: true }));
+    report.summary = { total: report.apps.length, up: 0, down: 0, unpublished: 0 };
+  }
 
   const cards = document.getElementById('summaryCards');
   cards.replaceChildren();
@@ -138,7 +144,11 @@ function render() {
   fill('databasesList', report.apps.map((a) => placeholderRow(a.name, `قاعدة البيانات: ${a.db || 'غير معروفة'}`)));
   fill('licensesList', report.apps.map((a) => placeholderRow(a.name, 'لا يوجد خادم تراخيص مربوط بعد')));
 
-  document.getElementById('lastChecked').textContent = `آخر فحص: ${fmtTime(report.checkedAt)} (${fmtAgo(report.checkedAt)})`;
+  const time = report.checkedAt ? fmtTime(report.checkedAt) : 'لا تتوفر قراءة محفوظة';
+  document.getElementById('lastChecked').textContent = report.offline
+    ? `وضع أوفلاين — ${report.cached ? 'آخر تقرير محفوظ: ' + time : 'عرض قائمة التطبيقات دون فحص مباشر'}`
+    : `آخر فحص: ${time} (${fmtAgo(report.checkedAt)})`;
+  document.getElementById('connectionMode').textContent = report.offline ? 'أوفلاين' : 'أونلاين';
 }
 
 async function load(force) {

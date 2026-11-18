@@ -6,9 +6,39 @@
   "description": "لوحة تحكم الأرجوان — مراقبة وتفعيل وإدارة تطبيقات الأرجوان",
   "scripts": {
     "dev": "wrangler pages dev . --port 8788",
-    "check": "node tools/status-check.mjs"
+    "check": "node tools/status-check.mjs",
+    "desktop:dev": "electron .",
+    "desktop:dist": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
-    "wrangler": "^3.90.0"
+    "wrangler": "^3.90.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "main": "desktop/main.cjs",
+  "build": {
+    "appId": "com.arjwan.controlcenter",
+    "productName": "Arjwan Control Center",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "assets/**/*",
+      "shared/**/*",
+      "desktop/main.cjs",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
