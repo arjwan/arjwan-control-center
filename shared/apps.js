@@ -61,7 +61,18 @@ export const APPS = [
     platform: 'GitHub',
     repo: 'arjwan307/salonati-new',
     db: 'غير معروف'
-  }
+  },
+  { id: 'shinomino-call', name: 'شنو منو اتصال', description: 'الاتصالات والمراسلة (ضمن المشروع الحالي)', url: null, platform: 'GitHub / Windows', repo: 'arjwan/shenoo-menoo-tak-tak', db: 'غير محدد' },
+  { id: 'sumer-school', name: 'مدرسة سومر', description: 'التعليم الإلكتروني (ضمن شنو منو)', url: null, platform: 'GitHub / Windows', repo: 'arjwan/shenoo-menoo-tak-tak', db: 'غير محدد' },
+  { id: 'jamiati', name: 'جامعتي', description: 'مجتمع ومواد طلابية', url: null, platform: 'GitHub / Windows', repo: 'mali77601-wq/uni_campus_hub', db: 'غير محدد' },
+  { id: 'almoraqeb-server', name: 'المراقب برو', description: 'الخادم ونظام المراقبة', url: null, platform: 'GitHub / Windows', repo: 'arjwan/AlMoraqebPro-Server', db: 'غير محدد' },
+  { id: 'mahasib-offline', name: 'المحاسب برو — سطح المكتب أوفلاين', description: 'نسخة Windows المحلية', url: null, platform: 'GitHub / Windows', repo: 'arjwan/AlMahasibPro-Desktop-Offline', db: 'غير محدد' },
+  { id: 'scanner', name: 'الأرجوان سكنر الذكي', description: 'المسح الضوئي والباركود', url: null, platform: 'GitHub / Windows', repo: 'arjwan307/Arjwan-Smart-Accounting-Scanner', db: 'غير محدد' },
+  { id: 'representatives', name: 'مندوبي العين', description: 'إدارة المندوبين', url: null, platform: 'GitHub / Windows', repo: 'arjwan/AlAyn-Representatives', db: 'غير محدد' },
+  { id: 'remote-control', name: 'التحكم عن بعد', description: 'لوحة المفاتيح والفأرة والتحكم', url: null, platform: 'GitHub / Windows', repo: 'arjwan307/Arjwan-Remote-Keyboard-Mouse', db: 'غير محدد' },
+  { id: 'starcom', name: 'ستاركوم ريموت', description: 'برنامج التحكم عن بعد', url: null, platform: 'GitHub / Windows', repo: 'arjwan307/Starcom-Remote', db: 'غير محدد' },
+  { id: 'telegram-views', name: 'Telegram Views Pro', description: 'أداة تليغرام', url: null, platform: 'GitHub / Windows', repo: 'arjwan307/-Telegram-Views-Pro', db: 'غير محدد' },
+  { id: 'control-center', name: 'مركز الأرجوان', description: 'إدارة المشاريع والتطبيقات', url: null, platform: 'GitHub / Windows', repo: 'arjwan/arjwan-control-center', db: 'غير محدد' }
 ];
 
 export const SERVICES = [
