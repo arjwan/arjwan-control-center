@@ -1,0 +1,23 @@
+name: Windows Desktop Build
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/windows-online-offline-hub]
+    paths: ['desktop/**','assets/**','index.html','shared/apps.js','package.json','.github/workflows/windows-desktop.yml']
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run desktop:dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Arjwan-Control-Center-Windows-unsigned
+          path: dist/*.exe
+          if-no-files-found: error
