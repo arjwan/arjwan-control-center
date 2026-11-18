@@ -47,9 +47,9 @@ function appRow(app) {
 
   row.append(el('span', `pill ${app.status}`, STATUS_LABEL[app.status] || app.status));
 
-  if (app.url) {
-    const link = el('a', 'btn', 'فتح');
-    link.href = app.url;
+  if (app.url || app.repo) {
+    const link = el('a', 'btn', app.url ? 'فتح' : 'المستودع');
+    link.href = app.url || `https://github.com/${app.repo}`;
     link.target = '_blank';
     link.rel = 'noopener';
     row.append(link);
