@@ -16,6 +16,7 @@ const errors = {
 let token = '';
 let offset = 0;
 let busy = false;
+let issuedDesktop = null;
 
 async function api(body) {
   const headers = { Authorization: `Bearer ${token}` };
@@ -87,6 +88,7 @@ async function load() {
     const expired = l.state === 'active' && l.expires_at && Date.parse(l.expires_at) <= Date.now();
     const details = [projectNames.get(l.project_id), plans[l.plan], states[expired ? 'expired' : l.state]];
     if (l.expires_at) details.push(new Date(l.expires_at).toLocaleDateString('ar-IQ'));
+    if (l.last_seen_at) details.push('آخر تحقق: ' + new Date(l.last_seen_at).toLocaleString('ar-IQ'));
     return row(l.customer, details.join(' · '), ...actions);
   });
   get('licensesList').replaceChildren(...(rows.length ? rows : [row('لا توجد تراخيص في هذه الصفحة', '')]));
@@ -109,6 +111,8 @@ async function run(operation) {
 }
 
 function dismissKey() {
+  issuedDesktop = null;
+  get('control-export').hidden = true;
   get('control-key').value = '';
   get('control-issued').hidden = true;
 }
@@ -134,6 +138,10 @@ function mutate(body, form) {
     }
     const result = await api(body);
     if (result.key) {
+      if (result.projectId === 'almahasib-offline') {
+        issuedDesktop = { key: result.key, expiresAt: result.expiresAt, url: new URL('/api/control', location.origin).href };
+        get('control-export').hidden = false;
+      }
       get('control-key').value = result.key;
       get('control-issued').hidden = false;
       get('control-issued').scrollIntoView({ block: 'nearest' });
@@ -184,3 +192,13 @@ get('control-copy').addEventListener('click', () => run(async () => {
   await navigator.clipboard.writeText(get('control-key').value);
   get('control-key').select();
 }));
+
+get('control-export').addEventListener('click', () => {
+  if (!issuedDesktop) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(issuedDesktop)], { type: 'application/json' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'almahasib-desktop-license-config.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
