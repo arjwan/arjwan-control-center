@@ -59,10 +59,45 @@
 
   <section class="view" id="view-licenses">
     <h2>التراخيص والتفعيل</h2>
-    <div class="notice">
-      التفعيل يتطلب خادم تراخيص موثوقاً ومفتاح توقيع. لا تُنفَّذ أي عملية تفعيل من هذه الواجهة قبل ربط الخادم.
+    <form id="control-login" class="control-form">
+      <label>مفتاح الإدارة <input name="token" type="password" required autocomplete="off" dir="ltr"></label>
+      <button class="btn primary">دخول</button>
+    </form>
+    <p id="control-feedback" role="status"></p>
+    <div id="control-panel" hidden>
+      <button id="control-logout" type="button" class="btn">خروج</button>
+      <h3>المشاريع</h3>
+      <form id="project-form" class="control-form">
+        <label>معرّف المشروع <input name="projectId" dir="ltr" placeholder="my-project" required maxlength="63" pattern="[a-z0-9][a-z0-9\-]{1,62}"></label>
+        <label>اسم المشروع <input name="name" required maxlength="100"></label>
+        <button class="btn">إضافة مشروع</button>
+      </form>
+      <div class="list" id="control-projects"></div>
+      <h3>طلبات التراخيص</h3>
+      <form id="license-form" class="control-form">
+        <label>المشروع <select name="projectId" required></select></label>
+        <label>اسم العميل <input name="customer" required maxlength="150"></label>
+        <label>الباقة <select name="plan">
+          <option value="trial">تجريبية (٣٠ يومًا)</option>
+          <option value="annual">سنوية</option>
+          <option value="permanent">دائمة</option>
+        </select></label>
+        <button class="btn primary">إضافة طلب</button>
+      </form>
+      <div id="control-issued" class="notice" hidden>
+        <label>انسخ مفتاح الترخيص الآن، يظهر مرة واحدة
+          <input id="control-key" readonly dir="ltr">
+        </label>
+        <button id="control-copy" type="button" class="btn">نسخ</button>
+        <button id="control-export" type="button" class="btn" hidden>تنزيل إعداد ترخيص الدسكتوب</button>
+        <button id="control-dismiss" type="button" class="btn">إخفاء</button>
+      </div>
+      <div class="list" id="licensesList"></div>
+      <div class="control-form">
+        <button id="control-prev" type="button" class="btn">السابق</button>
+        <button id="control-next" type="button" class="btn">التالي</button>
+      </div>
     </div>
-    <div class="list" id="licensesList"></div>
   </section>
 
   <section class="view" id="view-monitor">
@@ -78,9 +113,10 @@
 </main>
 
 <footer class="footer">
-  <span>قراءة فقط — لا تُنفَّذ أوامر على الخدمات من هذه النسخة.</span>
+  <span>الأرجوان سنتر لإدارة المشاريع والتراخيص</span>
 </footer>
 
 <script src="/assets/app.js" type="module"></script>
+<script src="/assets/control.js" type="module"></script>
 </body>
 </html>

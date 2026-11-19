@@ -136,7 +136,6 @@ function render() {
   fill('updatesList', report.repos.map(repoRow));
 
   fill('databasesList', report.apps.map((a) => placeholderRow(a.name, `قاعدة البيانات: ${a.db || 'غير معروفة'}`)));
-  fill('licensesList', report.apps.map((a) => placeholderRow(a.name, 'لا يوجد خادم تراخيص مربوط بعد')));
 
   document.getElementById('lastChecked').textContent = `آخر فحص: ${fmtTime(report.checkedAt)} (${fmtAgo(report.checkedAt)})`;
 }

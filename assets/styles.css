@@ -191,3 +191,16 @@ a:hover { text-decoration: underline; }
   main { padding: 14px; }
   .row { padding: 12px; }
 }
+
+.control-form:not([hidden]) { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+.control-form label, #control-issued label { display: grid; gap: 5px; }
+.control-form input, .control-form select, #control-key {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px;
+  font: inherit;
+}
+#control-key { width: min(100%, 42rem); margin-bottom: 10px; }
+#control-feedback { color: var(--muted); }
