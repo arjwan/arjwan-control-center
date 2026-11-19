@@ -71,12 +71,18 @@ export async function onRequest({ request, env }) {
           typeof input.key !== 'string' || !secretPattern.test(input.key)) {
         return reply({ error: 'invalid_input' }, 400);
       }
+      const keyHash = await hash(input.key);
+      const now = new Date();
+      const timestamp = now.toISOString();
+      await db.prepare(`UPDATE control_licenses SET last_seen_at = ?
+        WHERE project_id = ? AND key_hash = ? AND (last_seen_at IS NULL OR last_seen_at < ?)`)
+        .bind(timestamp, input.projectId, keyHash, new Date(now.getTime() - 300000).toISOString()).run();
       const license = await db.prepare(`
         SELECT l.plan, l.expires_at FROM control_licenses l
         JOIN control_projects p ON p.id = l.project_id
         WHERE l.project_id = ? AND l.key_hash = ? AND l.state = 'active' AND p.enabled = 1
           AND (l.expires_at IS NULL OR l.expires_at > ?)
-      `).bind(input.projectId, await hash(input.key), new Date().toISOString()).first();
+      `).bind(input.projectId, keyHash, timestamp).first();
       return reply(license ? { valid: true, plan: license.plan, expiresAt: license.expires_at } : { valid: false });
     }
 
@@ -84,7 +90,7 @@ export async function onRequest({ request, env }) {
     if (request.method === 'GET') {
       const results = await db.batch([
         db.prepare('SELECT id, name, enabled FROM control_projects ORDER BY name'),
-        db.prepare(`SELECT id, project_id, customer, plan, state, created_at, decided_at, expires_at
+        db.prepare(`SELECT id, project_id, customer, plan, state, created_at, decided_at, expires_at, last_seen_at
           FROM control_licenses ORDER BY created_at DESC, id DESC LIMIT 50 OFFSET ?`)
           .bind(Math.min(100000, Math.max(0, Number.parseInt(url.searchParams.get('offset'), 10) || 0)))
       ]);
@@ -121,7 +127,7 @@ export async function onRequest({ request, env }) {
           .bind(crypto.randomUUID(), customer, input.plan, now, projectId).run();
         break;
       case 'approve': {
-        const license = await db.prepare("SELECT plan FROM control_licenses WHERE id = ? AND state = 'pending'")
+        const license = await db.prepare("SELECT plan, project_id FROM control_licenses WHERE id = ? AND state = 'pending'")
           .bind(typeof input.id === 'string' ? input.id : '').first();
         if (!license) return reply({ error: 'conflict' }, 409);
         const key = hex(crypto.getRandomValues(new Uint8Array(32)));
@@ -130,7 +136,7 @@ export async function onRequest({ request, env }) {
           WHERE id = ? AND state = 'pending' AND EXISTS (
             SELECT 1 FROM control_projects p WHERE p.id = project_id AND p.enabled = 1
           )`).bind(await hash(key), now, expiresAt, input.id).run();
-        return result.meta.changes ? reply({ ok: true, key, expiresAt }) : reply({ error: 'conflict' }, 409);
+        return result.meta.changes ? reply({ ok: true, key, expiresAt, projectId: license.project_id }) : reply({ error: 'conflict' }, 409);
       }
       case 'reject':
       case 'revoke':
